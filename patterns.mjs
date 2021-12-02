@@ -103,14 +103,22 @@ export const Forward = () => {
 	return func;
 };
 
-export const Bind = (obj, sub) =>
-	text => {
+export const Bind = (objfunc, sub) => {
+	if(sub === undefined) {
+		sub = objfunc;
+		objfunc = () => ({})
+	}
+	return text => {
+		let obj = objfunc();
 		bindStack.push(obj);
 		const ret = sub(text);
 		obj = bindStack.pop();
 		if(ret === None) return None;
 		return [ret[0], obj]
-	};
+	}
+};
+
+export const BindArray = sub => Bind(() => [], sub);
 
 export const AddValue = sub =>
 	text => {
@@ -118,4 +126,36 @@ export const AddValue = sub =>
 		if(ret === None) return None;
 		bindStack[bindStack.length - 1].push(ret[1]);
 		return ret
-	}
+	};
+
+export const Named = (name, sub) =>
+	text => {
+		const ret = sub(text);
+		if(ret === None) return None;
+		bindStack[bindStack.length - 1][name] = ret[1];
+		return ret
+	};
+
+export const Transform = (func, sub) =>
+	text => {
+		const ret = sub(text);
+		if(ret === None) return None;
+		return [ret[0], func(ret[1])]
+	};
+
+export const PushValue = sub =>
+	text => {
+		bindStack.pop();
+		const ret = sub(text);
+		bindStack.push(ret === None ? undefined : ret[1]);
+		return ret;
+	};
+
+export const PopValue = sub =>
+	text => {
+		bindStack.push(undefined);
+		const ret = sub(text);
+		const value = bindStack.pop();
+		if(ret === None) return None;
+		return [ret[0], value]
+	};
