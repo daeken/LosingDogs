@@ -39,6 +39,9 @@ export const Sequence = (...elems) =>
 		return [text, list]
 	};
 
+export const LooseSequence = (...elems) =>
+	Sequence(...(elems.map(IgnoreLeadingWhitespace)));
+
 export const SavePass = sub =>
 	text => {
 		if(bindStack.length == 0)
@@ -96,6 +99,14 @@ export const Regex = regex =>
 		if(match === null) return None;
 		return [text.forward(match[0].length), match[0]];
 	});
+
+export const IgnoreLeadingWhitespace = sub =>
+	text => {
+		const match = text.toString().match(/^\s+/);
+		if(match !== null)
+			text = text.forward(match[0].length);
+		return sub(text);
+	};
 
 export const Forward = () => {
 	const func = text => func.value(text);

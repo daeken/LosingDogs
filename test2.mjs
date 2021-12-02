@@ -10,10 +10,9 @@ user Dogken:- Likes dogs
 -Dislikes fetch()
 `)
 
-const ws = p.Regex(/^\s+/)
 const ident = p.Regex(/^[a-z][a-z0-9]*/i)
-const about = p.PopValue(p.Sequence(p.Optional(ws), p.Literal('-'), p.Optional(ws), p.PushValue(p.Transform(x => x.trim(), p.Regex(/^[^\r\n]+\s*\n/)))))
-const user = p.Bind(p.Sequence(p.Optional(ws), p.Literal('user'), ws, p.Named('name', ident), p.Optional(ws), p.Literal(':'), p.Optional(ws), p.Named('about', p.ZeroOrMore(about))))
+const about = p.PopValue(p.LooseSequence(p.Literal('-'), p.PushValue(p.Transform(x => x.trim(), p.Regex(/^[^\r\n]+\s*\n/)))))
+const user = p.Bind(p.Sequence(p.Regex(/^\s*user\s+/), p.Named('name', ident), p.Regex(/^\s*:\s*/), p.Named('about', p.ZeroOrMore(about))))
 const grammar = p.PopValue(p.Sequence(p.PushValue(p.ZeroOrMore(user)), p.End))
 
 const res = grammar(text)
