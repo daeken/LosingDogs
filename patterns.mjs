@@ -9,11 +9,11 @@ export const Cache = (key, sub) => {
 
 let memoizeCounter = 0;
 export const Memoize = sub => {
-	const cid = memoizeCounter++;
+	const cid = memoizeCounter++ + ':';
 	return text =>
-		text.memoization[cid] !== undefined
-			? text.memoization[cid]
-			: text.memoization[cid] = sub(text);
+		text.memoization[cid + text.start] !== undefined
+			? text.memoization[cid + text.start]
+			: text.memoization[cid + text.start] = sub(text);
 }
 
 export const None = null;
@@ -65,6 +65,17 @@ export const Choice = (...opts) =>
 			if(ret !== None) return ret
 		}
 		return None
+	};
+
+export const LongestChoice = (...opts) =>
+	text => {
+		let match = [text, null];
+		for(const opt of opts) {
+			const ret = SavePass(opt)(text);
+			if(ret !== None && ret[0].start > match[0].start)
+				match = ret
+		}
+		return match[0] === text ? None : match
 	};
 
 export const Optional = sub =>

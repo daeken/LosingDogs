@@ -17,5 +17,9 @@ export class Bobbin {
 
 	forward(count) { return new Bobbin(this, this.start + count) }
 
+	peek(count = 1) {
+		return this.text.substring(this.start, this.start + count)
+	}
+
 	toString() { return this.start == 0 && this.length == this.totalLength ? this.text : this.text.substring(this.start, this.end) }
 }
