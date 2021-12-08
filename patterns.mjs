@@ -96,8 +96,8 @@ export const ZeroOrMore = sub =>
 
 export const OneOrMore = sub =>
 	text => {
-		const ret = ZeroOrMore(sub);
-		if(ret === None || ret[1].length == 0) return None;
+		const ret = ZeroOrMore(sub)(text);
+		if(ret[1].length == 0) return None;
 		return ret
 	};
 

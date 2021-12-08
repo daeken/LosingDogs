@@ -22,4 +22,5 @@ export class Bobbin {
 	}
 
 	toString() { return this.start == 0 && this.length == this.totalLength ? this.text : this.text.substring(this.start, this.end) }
+	toStringBackwards() { return this.start == this.totalLength ? this.text : this.text.substring(0, this.start) }
 }
